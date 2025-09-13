@@ -1,227 +1,374 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>YouTube Transcript Extractor</title>
-    <style>
-      :root {
-        --charcoal: #264653ff;
-        --persian-green: #2a9d8fff;
-        --saffron: #e9c46aff;
-        --sandy-brown: #f4a261ff;
-        --burnt-sienna: #e76f51ff;
+
+<head>
+  <title>YouTube Transcript Extractor</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary-blue: #0ea5e9;
+      --primary-green: #10b981;
+      --background: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border-light: #e2e8f0;
+      --border-color: #cbd5e1;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --gradient-primary: linear-gradient(135deg, var(--primary-blue), #3b82f6);
+      --gradient-success: linear-gradient(135deg, var(--primary-green), #059669);
+      --gradient-bg: linear-gradient(135deg, #f1f5f9, #ffffff);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      width: 380px;
+      padding: 0;
+      margin: 0;
+      background: var(--gradient-bg);
+      color: var(--text-primary);
+      min-height: 280px;
+      max-height: 600px;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .container {
+      padding: 20px;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 0;
+    }
+
+    .header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover:before {
+      left: 100%;
+    }
+
+    #extractTranscript {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+      border: 1px solid transparent;
+    }
+
+    #extractTranscript:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    #extractTranscript:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    #extractTranscript:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: var(--shadow-sm);
+      opacity: 0.6;
+    }
+
+    #extractTranscript:disabled:hover {
+      transform: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    #status {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      border-left: 4px solid var(--primary-blue);
+      min-height: auto;
+    }
+
+    .video-info {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      border-left: 4px solid var(--primary-green);
+    }
+
+    .video-info strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    #transcriptContainer {
+      background: var(--card-bg);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      max-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .transcript-header {
+      background: var(--gradient-primary);
+      padding: 16px 20px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .button-group-header {
+      display: flex;
+      gap: 8px;
+    }
+
+    #transcriptText {
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-primary);
+      background-color: var(--card-bg);
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      flex-grow: 1;
+      max-height: 300px;
+    }
+
+    .copy-button {
+      background: var(--card-bg);
+      color: var(--primary-blue);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      margin: 0;
+      width: auto;
+    }
+
+    .copy-button:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+      color: var(--primary-blue);
+      border-color: var(--primary-blue);
+    }
+
+    .copy-button:active {
+      transform: translateY(0);
+    }
+
+    .word-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      padding: 12px 20px;
+      background: var(--background);
+      border-top: 1px solid var(--border-light);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--primary-blue);
+      font-weight: 500;
+    }
+
+    .error {
+      border-left-color: #ef4444 !important;
+      background: #fef2f2 !important;
+      color: #dc2626 !important;
+      font-weight: 600;
+    }
+
+    .success {
+      border-left-color: var(--primary-green) !important;
+      background: #f0fdf4 !important;
+      color: #16a34a !important;
+      font-weight: 600;
+    }
+
+    /* Enhanced scrollbar styling */
+    .container::-webkit-scrollbar,
+    #transcriptText::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .container::-webkit-scrollbar-track,
+    #transcriptText::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+
+    .container::-webkit-scrollbar-thumb,
+    #transcriptText::-webkit-scrollbar-thumb {
+      background: var(--gradient-primary);
+      border-radius: 6px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    .container::-webkit-scrollbar-thumb:hover,
+    #transcriptText::-webkit-scrollbar-thumb:hover {
+      background: var(--gradient-secondary);
+      background-clip: padding-box;
+    }
+
+    #transcriptText::selection {
+      background: rgba(139, 92, 246, 0.3);
+      color: var(--text-primary);
+    }
+
+    /* Enhanced loading animation */
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-left: 10px;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      border-top: 3px solid var(--electric-violet);
+      border-right: 3px solid var(--cyan-blue);
+      animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      
-      body { 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        width: 350px; 
-        padding: 12px;
-        margin: 0;
-        background: linear-gradient(135deg, var(--saffron) 0%, #ffffff 100%);
-        color: var(--charcoal);
-        min-height: 250px;
-        max-height: 500px;
-        overflow-y: auto;
+    }
+
+    /* Focus states for accessibility */
+    button:focus-visible,
+    .copy-button:focus-visible {
+      outline: 3px solid rgba(139, 92, 246, 0.5);
+      outline-offset: 3px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-height: 500px) {
+      .container {
+        padding: 16px;
       }
-      .header {
-        text-align: center;
-        margin-bottom: 15px;
-        color: var(--charcoal);
-        background: var(--saffron);
-        padding: 8px;
-        border-radius: 6px;
-        border: 2px solid var(--persian-green);
-      }
-      .header h2 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 600;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-      }
-      button {
-        width: 100%;
-        padding: 10px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        margin-bottom: 12px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-      }
-      #extractTranscript {
-        background: linear-gradient(135deg, var(--persian-green), var(--charcoal));
-        color: white;
-        border: 2px solid var(--persian-green);
-      }
-      #extractTranscript:hover {
-        background: linear-gradient(135deg, var(--charcoal), var(--persian-green));
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(42, 157, 143, 0.3);
-      }
-      #extractTranscript:disabled {
-        background: var(--sandy-brown);
-        cursor: not-allowed;
-        opacity: 0.6;
-        transform: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      #status { 
-        margin: 12px 0;
-        padding: 10px;
-        border-radius: 6px;
-        background-color: var(--saffron);
-        border-left: 4px solid var(--persian-green);
-        min-height: 16px;
-        font-size: 13px;
-        font-weight: 500;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .video-info {
-        font-size: 12px;
-        color: var(--charcoal);
-        margin-bottom: 12px;
-        padding: 10px;
-        background: linear-gradient(135deg, var(--saffron), #ffffff);
-        border-radius: 6px;
-        border-left: 4px solid var(--persian-green);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .video-info strong {
-        color: var(--burnt-sienna);
-        font-weight: 600;
-      }
+
       #transcriptContainer {
-        margin: 12px 0;
-        padding: 0;
-        border: 2px solid var(--persian-green);
-        border-radius: 8px;
-        background-color: #ffffff;
-        max-height: 320px;
-        overflow: visible;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        max-height: 250px;
       }
-      .transcript-header {
-        background: linear-gradient(135deg, var(--charcoal), var(--persian-green));
-        padding: 10px 12px;
-        border-bottom: 2px solid var(--persian-green);
-        font-weight: bold;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 13px;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      .button-group-header {
-        display: flex;
-        gap: 6px;
-      }
+
       #transcriptText {
-        padding: 12px;
-        font-size: 13px;
-        line-height: 1.6;
-        max-height: 280px;
-        overflow-y: auto;
-        color: var(--charcoal);
-        background-color: #ffffff;
-        word-wrap: break-word;
-        white-space: pre-wrap;
+        max-height: 180px;
       }
-      .copy-button {
-        background: linear-gradient(135deg, var(--sandy-brown), var(--burnt-sienna));
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 11px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 3px rgba(0,0,0,0.2);
-      }
-      .copy-button:hover {
-        background: linear-gradient(135deg, var(--burnt-sienna), var(--sandy-brown));
-        transform: translateY(-1px);
-        box-shadow: 0 3px 6px rgba(231, 111, 81, 0.3);
-      }
-      .word-count {
-        font-size: 10px;
-        color: var(--persian-green);
-        text-align: right;
-        padding: 6px 12px;
-        background: linear-gradient(135deg, var(--saffron), #ffffff);
-        border-top: 1px solid var(--persian-green);
-        font-weight: 500;
-      }
-      .hidden {
-        display: none;
-      }
-      .loading {
-        text-align: center;
-        color: var(--persian-green);
-      }
-      .error {
-        border-left-color: var(--burnt-sienna) !important;
-        background: linear-gradient(135deg, #ffebee, var(--saffron)) !important;
-        color: var(--burnt-sienna) !important;
-        font-weight: 600;
-      }
-      .success {
-        border-left-color: var(--persian-green) !important;
-        background: linear-gradient(135deg, var(--saffron), #e8f4f8) !important;
-        color: var(--charcoal) !important;
-        font-weight: 600;
-      }
-      
-      /* Scrollbar styling */
-      #transcriptText::-webkit-scrollbar,
-      body::-webkit-scrollbar {
-        width: 10px;
-      }
-      #transcriptText::-webkit-scrollbar-track,
-      body::-webkit-scrollbar-track {
-        background: var(--saffron);
-        border-radius: 5px;
-      }
-      #transcriptText::-webkit-scrollbar-thumb,
-      body::-webkit-scrollbar-thumb {
-        background: var(--persian-green);
-        border-radius: 5px;
-        border: 2px solid var(--saffron);
-      }
-      #transcriptText::-webkit-scrollbar-thumb:hover,
-      body::-webkit-scrollbar-thumb:hover {
-        background: var(--charcoal);
-      }
-      
-      /* Make sure transcript text is fully visible */
-      #transcriptText {
-        box-sizing: border-box;
-      }
-      
-      /* Ensure proper text selection */
-      #transcriptText::selection {
-        background-color: var(--saffron);
-        color: var(--charcoal);
-      }
-    </style>
-  </head>
-  <body>
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
     <div class="header">
       <h2>Transcript Extractor</h2>
+      <p>Extract and save YouTube video transcripts</p>
     </div>
-    
+
     <button id="extractTranscript">Extract Transcript</button>
-    
+
     <div id="status">Ready to extract transcript from YouTube video</div>
-    
+
     <div id="videoInfo" class="video-info hidden"></div>
-    
+
     <div id="transcriptContainer" class="hidden">
       <div class="transcript-header">
         <span>Extracted Transcript</span>
@@ -233,7 +380,9 @@
       <div id="transcriptText"></div>
       <div class="word-count" id="wordCount"></div>
     </div>
-    
-    <script src="popup.js"></script>
-  </body>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
 </html>
