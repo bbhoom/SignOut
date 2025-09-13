@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YouTube ASL 3D Renderer</title>
+    <style>
+      body { 
+        font-family: Arial, sans-serif; 
+        width: 350px; 
+        padding: 10px;
+        margin: 0;
+      }
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      button {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+      }
+      #extractTranscript {
+        background-color: #4CAF50;
+        color: white;
+      }
+      #extractTranscript:hover {
+        background-color: #45a049;
+      }
+      #getASL {
+        background-color: #2196F3;
+        color: white;
+      }
+      #getASL:hover {
+        background-color: #1976D2;
+      }
+      #status { 
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f5f5f5;
+        min-height: 20px;
+      }
+      #transcriptContainer {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fafafa;
+        max-height: 200px;
+        overflow-y: auto;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      #videoContainer {
+        margin-top: 10px;
+      }
+      video { 
+        width: 100%; 
+        margin-top: 10px; 
+        border-radius: 5px;
+      }
+      .download-link {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 5px 10px;
+        background-color: #FF9800;
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+        font-size: 12px;
+      }
+      .download-link:hover {
+        background-color: #F57C00;
+      }
+      .video-info {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 10px;
+        padding: 5px;
+        background-color: #f0f0f0;
+        border-radius: 3px;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-group">
+      <button id="extractTranscript">Extract Transcript</button>
+      <button id="getASL">Get 3D ASL Video</button>
+    </div>
+    
+    <div id="status">Ready to extract transcript or generate ASL video</div>
+    
+    <div id="videoInfo" class="video-info hidden"></div>
+    
+    <div id="transcriptContainer" class="hidden">
+      <strong>Extracted Transcript:</strong>
+      <div id="transcriptText"></div>
+    </div>
+    
+    <div id="videoContainer"></div>
+    
+    <script src="popup.js"></script>
+  </body>
+</html>
